@@ -5,33 +5,41 @@
 //  Created by Arthas on 2026/08/12.
 //
 
-
 import ComposableArchitecture
-
 
 @Reducer
 struct CounterFeature {
-  @ObservableState
-  struct State {
-    var count = 0
-  }
-  
-  enum Action {
-    case decrementButtonTapped
-    case incrementButtonTapped
-  }
-  
-  var body: some ReducerOf<Self> {
-    Reduce { state, action in
-      switch action {
-      case .decrementButtonTapped:
-        state.count -= 1
-        return .none
-        
-      case .incrementButtonTapped:
-        state.count += 1
-        return .none
-      }
+    @ObservableState
+    struct State: Equatable {
+        var count = 0
+        var fact: String?
+        var isLoading = false
     }
-  }
+
+    enum Action {
+        case decrementButtonTapped
+        case factButtonTapped
+        case incrementButtonTapped
+    }
+
+    var body: some ReducerOf<Self> {
+        Reduce { state, action in
+            switch action {
+            case .decrementButtonTapped:
+                state.count -= 1
+                state.fact = nil
+                return .none
+
+            case .factButtonTapped:
+                state.fact = nil
+                state.isLoading = true
+                return .none
+
+            case .incrementButtonTapped:
+                state.count += 1
+                state.fact = nil
+                return .none
+            }
+        }
+    }
 }

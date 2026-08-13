@@ -42,6 +42,10 @@ playground.xcworkspace
 .build/
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 
+# SwiftFormat BuildTools
+BuildTools/.build
+BuildTools/.swiftpm
+
 # CocoaPods
 Pods/
 
