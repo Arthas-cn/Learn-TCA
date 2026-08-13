@@ -16,7 +16,7 @@ struct TCAApp: App {
                 store: Store(initialState: CounterFeature.State()) {
                     CounterFeature()
                         ._printChanges()
-                }
+                },
             )
         }
     }

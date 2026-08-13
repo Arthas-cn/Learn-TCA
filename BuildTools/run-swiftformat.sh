@@ -27,4 +27,4 @@ if [ -z "$SWIFTFORMAT" ]; then
 fi
 
 echo "note: Running SwiftFormat: $SWIFTFORMAT"
-"$SWIFTFORMAT" "$SRCROOT" --exclude BuildTools
+"$SWIFTFORMAT" "$SRCROOT" --exclude BuildTools --swift-version 6.3
