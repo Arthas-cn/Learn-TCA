@@ -1,11 +1,31 @@
-// swift-tools-version:5.1
+// swift-tools-version: 5.9
 import PackageDescription
 
 let package = Package(
     name: "BuildTools",
-    platforms: [.macOS(.v10_11)],
-    dependencies: [
-        .package(url: "https://github.com/nicklockwood/SwiftFormat", from: "0.62.1"),
+    platforms: [.macOS(.v13)],
+    products: [
+        .plugin(name: "FormatSources", targets: ["SwiftFormatCommand"]),
     ],
-    targets: [.target(name: "BuildTools", path: "")]
+    targets: [
+        .binaryTarget(
+            name: "swiftformat",
+            path: "Artifacts/swiftformat.artifactbundle"
+        ),
+        .plugin(
+            name: "SwiftFormatCommand",
+            capability: .command(
+                intent: .custom(
+                    verb: "format-sources",
+                    description: "Format Swift sources with SwiftFormat"
+                ),
+                permissions: [
+                    .writeToPackageDirectory(reason: "Rewrite formatted Swift source files"),
+                ]
+            ),
+            dependencies: [
+                "swiftformat",
+            ]
+        ),
+    ]
 )

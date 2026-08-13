@@ -117,7 +117,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C98D49D3302321180014EC63 /* Build configuration list for PBXNativeTarget "TCA" */;
 			buildPhases = (
-				C98D49F1302321180014EC63 /* SwiftFormat */,
 				C98D49AE302321170014EC63 /* Sources */,
 				C98D49AF302321170014EC63 /* Frameworks */,
 				C98D49B0302321170014EC63 /* Resources */,
@@ -217,6 +216,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				C98D49E1302321180014EC63 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				C98D4A10302321180014EC63 /* XCLocalSwiftPackageReference "BuildTools" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C98D49B3302321170014EC63 /* Products */;
@@ -253,28 +253,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		C98D49F1302321180014EC63 /* SwiftFormat */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = SwiftFormat;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/BuildTools/run-swiftformat.sh\"\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C98D49AE302321170014EC63 /* Sources */ = {
@@ -437,7 +415,6 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TCA/Info.plist;
@@ -481,7 +458,6 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TCA/Info.plist;
@@ -654,6 +630,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		C98D4A10302321180014EC63 /* XCLocalSwiftPackageReference "BuildTools" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = BuildTools;
+		};
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
 		C98D49E1302321180014EC63 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
