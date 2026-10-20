@@ -12,11 +12,12 @@ import SwiftUI
 struct TCAApp: App {
     var body: some Scene {
         WindowGroup {
-            CounterView(
-                store: Store(initialState: CounterFeature.State()) {
-                    CounterFeature()
-                        ._printChanges()
-                },
+            // 当前入口是「多个导航目的地」示例。之前的计数器仍留在工程里。
+            ContactsView(
+                store: Store(initialState: ContactsFeature.State()) {
+                    ContactsFeature()
+                        //._printChanges()
+                }
             )
         }
     }
