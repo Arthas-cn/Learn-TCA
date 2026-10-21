@@ -1,6 +1,6 @@
 # @Presents 与系统弹窗
 
-对照源码：`TCA/ContactsFeature.swift`、`TCA/ContactsView.swift`
+对照源码：`TCA/Contacts/ContactsFeature.swift`、`TCA/Contacts/ContactsView.swift`
 
 `@Presents` 配合 SwiftUI 的系统展示：`.sheet`、`.alert`、`.popover`、`.fullScreenCover`、`.navigationDestination`。
 

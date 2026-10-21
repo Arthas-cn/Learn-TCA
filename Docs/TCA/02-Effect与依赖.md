@@ -1,6 +1,6 @@
 # Effect 与依赖
 
-对照源码：`TCA/CounterFeature.swift`、`TCA/NumberFactClient.swift`、`TCA/AddContactFeature.swift`
+对照源码：`TCA/Counter/CounterFeature.swift`、`TCA/Counter/NumberFactClient.swift`、`TCA/Contacts/AddContact/AddContactFeature.swift`
 
 Reducer 的 `switch` 本身是同步的。它立刻改状态，然后返回一个 `Effect`，表示「接下来还要做什么」。
 

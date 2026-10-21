@@ -1,6 +1,6 @@
 # Scope：同时存在的子功能
 
-对照源码：`TCA/AppFeature.swift`、`TCA/AppView.swift`、`TCA/CounterFeature.swift`
+对照源码：`TCA/Counter/AppFeature.swift`、`TCA/Counter/AppView.swift`、`TCA/Counter/CounterFeature.swift`
 
 两个计数器页签从进入应用起就都在。关掉应用之前，它们的状态也一直在。这种子功能用 `Scope`。
 

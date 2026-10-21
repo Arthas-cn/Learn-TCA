@@ -1,6 +1,6 @@
 # ifLet：可选的子功能
 
-对照源码：`TCA/ContactsFeature.swift`、`TCA/AddContactFeature.swift`
+对照源码：`TCA/Contacts/ContactsFeature.swift`、`TCA/Contacts/AddContact/AddContactFeature.swift`
 
 `ifLet` 用于父状态里的一份可选子状态。有值时把子 reducer 接上，值为 `nil` 时子 reducer 不运行。
 

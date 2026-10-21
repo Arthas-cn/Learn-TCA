@@ -1,6 +1,6 @@
 # Delegate：父子通信
 
-对照源码：`TCA/AddContactFeature.swift`、`TCA/ContactsFeature.swift`
+对照源码：`TCA/Contacts/AddContact/AddContactFeature.swift`、`TCA/Contacts/ContactsFeature.swift`
 
 子功能把结果交还给父功能，用 delegate。子功能不修改父功能的状态，也不引用父功能的类型。
 

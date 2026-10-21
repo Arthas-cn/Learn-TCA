@@ -28,7 +28,7 @@ ContactsFeature
       └── edit                编辑名字
 ```
 
-入口在 `TCA/TCAApp.swift`，列表里可以选择进入哪一个例子。
+入口在 `TCA/App/TCAApp.swift`，列表里可以选择进入哪一个例子。
 
 另一棵树是两个计数器页签：
 
@@ -42,14 +42,17 @@ AppFeature
 
 | 文件 | 角色 |
 |---|---|
-| `TCA/CounterFeature.swift` | 叶子功能：状态、动作、Effect、取消 |
-| `TCA/NumberFactClient.swift` | 依赖的具体实现 |
-| `TCA/AppFeature.swift` | `Scope` 组合两个计数器 |
-| `TCA/Contact.swift` | 放进 State 的模型 |
-| `TCA/AddContactFeature.swift` | 子功能，通过 delegate 上报结果 |
-| `TCA/ContactsFeature.swift` | `ifLet`、`@Presents`、`Destination` |
-| `TCA/ContactsView.swift` | 用 `scope` 把子 store 交给 sheet、alert 和导航堆栈 |
-| `TCA/ContactDetailFeature.swift` | 堆栈里的详情页，删除或请求编辑时发 delegate |
-| `TCA/ContactDetailView.swift` | 详情页视图 |
-| `TCA/EditContactFeature.swift` | 堆栈里的第二种页面，保存时发 delegate |
-| `TCA/EditContactView.swift` | 编辑页视图 |
+| `TCA/App/TCAApp.swift` | 入口，选择进入哪一个例子 |
+| `TCA/Counter/CounterFeature.swift` | 叶子功能：状态、动作、Effect、取消 |
+| `TCA/Counter/CounterView.swift` | 计数器视图 |
+| `TCA/Counter/NumberFactClient.swift` | 依赖的具体实现 |
+| `TCA/Counter/AppFeature.swift` | `Scope` 组合两个计数器 |
+| `TCA/Counter/AppView.swift` | 两个页签的视图 |
+| `TCA/Contacts/Contact.swift` | 放进 State 的模型 |
+| `TCA/Contacts/AddContact/AddContactFeature.swift` | 子功能，通过 delegate 上报结果 |
+| `TCA/Contacts/ContactsFeature.swift` | `ifLet`、`@Presents`、`Destination`、导航堆栈 |
+| `TCA/Contacts/ContactsView.swift` | 用 `scope` 把子 store 交给 sheet、alert 和导航堆栈 |
+| `TCA/Contacts/Detail/ContactDetailFeature.swift` | 堆栈里的详情页，删除或请求编辑时发 delegate |
+| `TCA/Contacts/Detail/ContactDetailView.swift` | 详情页视图 |
+| `TCA/Contacts/Edit/EditContactFeature.swift` | 堆栈里的第二种页面，保存时发 delegate |
+| `TCA/Contacts/Edit/EditContactView.swift` | 编辑页视图 |
