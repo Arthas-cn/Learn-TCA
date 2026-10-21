@@ -36,6 +36,19 @@ var body: some ReducerOf<Self> {
 
 点页签 2 时反过来。两个 `Scope` 都会被问到，只有路径匹配的那个子 reducer 运行。
 
+## 视图只持有一个 Store
+
+`AppView` 的参数是 `StoreOf<AppFeature>`。每个页签再切出自己的计数器 Store：
+
+```swift
+CounterView(store: store.scope(\.tab1, action: \.tab1))
+CounterView(store: store.scope(\.tab2, action: \.tab2))
+```
+
+`CounterView` 仍然只认识 `StoreOf<CounterFeature>`。它不知道自己位于哪一个页签。
+
+应用入口的「计数器」打开的就是这一棵树。两个页签如果各自 `Store(initialState: CounterFeature.State())`，`AppFeature` 的 reducer 不会参与，页签之间以后也无法协作。
+
 ## 父功能什么时候才写自己的逻辑
 
 父 `Reduce` 为空，表示这些子功能被放在一起，但彼此不协作。

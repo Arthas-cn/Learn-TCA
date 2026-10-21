@@ -29,7 +29,7 @@ case .saveButtonTapped:
 ## 父功能看到的是包了三层的动作
 
 ```text
-.destination(                          发生在弹出界面里
+.destinationAction(                          发生在某个弹出界面里
   .presented(                          界面还开着
     .addContact(                       这次是添加联系人
       .delegate(.saveContact(contact)) 子功能说：请保存
@@ -41,7 +41,7 @@ case .saveButtonTapped:
 父功能拆开这三层，只做自己的事：
 
 ```swift
-case let .destination(.presented(.addContact(.delegate(.saveContact(contact))))):
+case let .destinationAction(.presented(.addContact(.delegate(.saveContact(contact))))):
     state.contacts.append(contact)
     return .none
 ```

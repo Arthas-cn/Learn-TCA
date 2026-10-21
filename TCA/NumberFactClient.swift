@@ -8,6 +8,8 @@
 import ComposableArchitecture
 import Foundation
 
+/// 计数器向外界要的能力：传入一个数字，异步拿回一句描述。
+/// 功能只依赖这个形状。真正的 URLSession 写在 `liveValue` 里，测试里会把 `fetch` 换成固定字符串。
 struct NumberFactClient {
     var fetch: (Int) async throws -> String
 }

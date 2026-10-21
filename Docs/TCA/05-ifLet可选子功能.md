@@ -27,7 +27,7 @@
 系统展示用的是另一个重载。状态来自 `@Presents` 的 `\. $destination`，动作是 `PresentationAction`：
 
 ```swift
-.ifLet(\.$destination, action: \.destination)
+.ifLet(\.$destination, action: \.destinationAction)
 ```
 
 它在上面三件事之外，还会注入 `dismiss`，并和 `.sheet`、`.alert` 的关闭动作配合。这一层写在 [@Presents 与系统弹窗](06-Presents与系统弹窗.md)。
@@ -56,15 +56,15 @@ ContactsFeature.body
 同一个动作传到父功能时，已经被包成：
 
 ```text
-.destination(.presented(.addContact(.saveButtonTapped)))
+.destinationAction(.presented(.addContact(.saveButtonTapped)))
 ```
 
-父功能的 `switch` 没有为 `saveButtonTapped` 写分支，落到 `case .destination`，返回 `.none`。
+父功能的 `switch` 没有为 `saveButtonTapped` 写分支，落到 `case .destinationAction`，返回 `.none`。
 
 随后 Effect 把 `delegate` 送回来。父功能这次匹配到：
 
 ```swift
-case let .destination(.presented(.addContact(.delegate(.saveContact(contact))))):
+case let .destinationAction(.presented(.addContact(.delegate(.saveContact(contact))))):
     state.contacts.append(contact)
     return .none
 ```
@@ -76,7 +76,7 @@ case let .destination(.presented(.addContact(.delegate(.saveContact(contact)))))
 父功能里要匹配包好的那一层：
 
 ```swift
-case .destination(.presented(.addContact(.saveButtonTapped))):
+case .destinationAction(.presented(.addContact(.saveButtonTapped))):
     guard case .addContact(let draft) = state.destination else {
         return .none
     }
@@ -84,7 +84,7 @@ case .destination(.presented(.addContact(.saveButtonTapped))):
     return .none
 ```
 
-这个分支要写在 `case .destination` 前面。兜底分支写在前面的话，具体分支永远匹配不到。
+这个分支要写在 `case .destinationAction` 前面。兜底分支写在前面的话，具体分支永远匹配不到。
 
 这个时刻动作本身不带联系人，草稿在 `state.destination` 里。现有代码已经在 `delegate(.saveContact)` 里追加列表。两个分支都追加的话，同一个人会进列表两次。保存留在 delegate 那个分支。
 

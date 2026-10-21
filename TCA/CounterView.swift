@@ -9,6 +9,8 @@ import ComposableArchitecture
 import SwiftUI
 
 struct CounterView: View {
+    /// `State` 标了 `@ObservableState`，视图可以直接读 `store.count`。
+    /// 这里不需要 `@Bindable`，因为没有把状态做成 `Binding` 交给系统控件。
     let store: StoreOf<CounterFeature>
 
     var body: some View {

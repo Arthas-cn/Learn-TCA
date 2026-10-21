@@ -11,8 +11,7 @@
 //
 //  当前工程依赖的是 TCA 1.26。1.10 教程里的两处写法后来改了名字，行为一样：
 //  - `@Reducer(state: .equatable)` 改为在下面用 extension 声明 `Destination.State: Equatable`
-//  - `$store.scope(state: \.destination?.addContact, action: \.destination.addContact)`
-//    改为 `$store.scope(\.destination?.addContact, action: \.destination.addContact)`
+//  - 教程的状态和动作都叫 destination。这里把动作改名为 destinationAction，方便区分 key path。
 //
 
 import ComposableArchitecture
@@ -41,6 +40,17 @@ struct ContactsFeature {
         /// - 4 个可选值：16 种组合，11 种非法
         /// 收成一个可选枚举后，编译器保证同一时刻最多只有一个 case 有值。
         @Presents var destination: Destination.State?
+
+        /// 导航堆栈上已经推进去的页面，从栈底到栈顶排成数组。
+        /// 空数组表示停在联系人列表。
+        ///
+        /// 元素是 `Path.State`，不是某一种页面的 State。
+        /// 详情和编辑是两种页面，收进同一个枚举后，数组里可以一层是详情、上面再叠一层编辑。
+        /// 系统返回或 `dismiss` 会把对应元素移除。
+        ///
+        /// 这是第三种组合：子功能可以有零个到很多个，每个都有自己的 id。
+        /// sheet 用一个可选值，是因为同时只能有一个弹窗；堆栈用数组，是因为可以一层层往里钻。
+        var path = StackState<Path.State>()
     }
 
     enum Action {
@@ -51,7 +61,16 @@ struct ContactsFeature {
         /// `PresentationAction` 只有两种：
         /// - `.presented(Destination.Action)`：子功能自己的动作
         /// - `.dismiss`：界面被关掉（下滑 sheet、点 alert 外面、或调用 dismiss 依赖）
-        case destination(PresentationAction<Destination.Action>)
+        /// 名字和状态里的 `destination` 故意不同。
+        /// 状态属性叫 `destination`，动作 case 叫 `destinationAction`，
+        /// 这样 `\.destination` 和 `\.destinationAction` 不会长得一样。
+        case destinationAction(PresentationAction<Destination.Action>)
+
+        /// 堆栈里发生的事：压入一层、弹出一层，或者某一层里面的按钮被点了。
+        /// `StackActionOf<Path>` 就是 `StackAction<Path.State, Path.Action>`。
+        /// 它用元素 id 指出是哪一层。动作里面再带 `Path.Action`，用来区分这一层是详情还是编辑。
+        /// 状态属性是 `path`，动作 case 是 `pathAction`。
+        case pathAction(StackActionOf<Path>)
 
         /// Alert 按钮回传的动作。它不属于某个子 reducer，只是按钮被点了之后父功能要做的事。
         /// `AlertState` 要求这个类型 `Equatable`，这样整棵状态可以比较、可以写测试。
@@ -74,9 +93,9 @@ struct ContactsFeature {
                 )
                 return .none
 
-            case let .destination(.presented(.addContact(.delegate(.saveContact(contact))))):
+            case let .destinationAction(.presented(.addContact(.delegate(.saveContact(contact))))):
                 // 动作被包了三层，从外往里读：
-                // 1. `.destination`：发生在某个弹出界面里
+                // 1. `.destinationAction`：发生在某个弹出界面里
                 // 2. `.presented(.addContact(...))`：具体是添加联系人，而不是 alert
                 // 3. `.delegate(.saveContact)`：子功能说「请保存」
                 //
@@ -86,7 +105,7 @@ struct ContactsFeature {
                 state.contacts.append(contact)
                 return .none
 
-            case let .destination(.presented(.alert(.confirmDeletion(id: id)))):
+            case let .destinationAction(.presented(.alert(.confirmDeletion(id: id)))):
                 // 用户点了 alert 上的 Delete。
                 // `AlertState` 是「点一次就结束」的临时界面：`ifLet` 收到按钮动作后会自动把
                 // `destination` 置 nil，这里只删数据。
@@ -94,7 +113,7 @@ struct ContactsFeature {
                 state.contacts.remove(id: id)
                 return .none
 
-            case .destination:
+            case .destinationAction:
                 // 其余弹出动作：子功能内部的 `setName`、关闭、alert 的取消。
                 // 父功能没有额外工作，返回 `.none`。
                 print("其余弹出动作：子功能内部的 `setName`、关闭、alert 的取消")
@@ -115,6 +134,41 @@ struct ContactsFeature {
                     }
                 )
                 return .none
+
+            case let .pathAction(.element(id: id, action: .detail(.delegate(.confirmDeletion)))):
+                // 动作被包了三层：
+                // 1. `.pathAction`：发生在堆栈里
+                // 2. `.element(id:action:)`：是哪一层
+                // 3. `.detail(.delegate(...))`：这一层是详情页，不是编辑页
+                // 联系人 id 放在那一层的 State 里，所以 delegate 不必再带一份 id。
+                guard let detailState = state.path[id: id]?.detail else { return .none }
+                state.contacts.remove(id: detailState.contact.id)
+                return .none
+
+            case let .pathAction(.element(id: id, action: .detail(.delegate(.edit)))):
+                // 详情页不持有 path，只能请父功能把编辑页压到自己上面。
+                // 压进去的是 `.edit`，和下面那一层 `.detail` 类型不同，但都在同一个数组里。
+                guard let detailState = state.path[id: id]?.detail else { return .none }
+                state.path.append(.edit(EditContactFeature.State(contact: detailState.contact)))
+                return .none
+
+            case let .pathAction(.element(id: _, action: .edit(.delegate(.saved(contact))))):
+                // 编辑页只交回新联系人。父功能改列表，并写回还留在堆栈里的详情，
+                // 这样编辑页被 dismiss 弹掉后，详情标题已经是新名字。
+                state.contacts[id: contact.id] = contact
+                for elementID in state.path.ids {
+                    // `?.detail` 在这一层不是详情时得到 nil，不会误改编辑页自己。
+                    guard var detail = state.path[id: elementID]?.detail else { continue }
+                    guard detail.contact.id == contact.id else { continue }
+                    detail.contact.name = contact.name
+                    state.path[id: elementID, case: \.detail] = detail
+                }
+                return .none
+
+            case .pathAction:
+                // 压栈、弹栈，以及某一层里父功能不用处理的动作，例如编辑页的 setName。
+                // 弹栈由 NavigationStack 的 Binding 或子功能的 dismiss 完成。
+                return .none
             }
         }
         // `ifLet` 把子 reducer 接到父 reducer 上。展示状态是 nil 时，子 reducer 不运行。
@@ -125,7 +179,15 @@ struct ContactsFeature {
         //
         // `Destination` 是 `@Reducer enum`，所以不用像普通子功能那样写出 `{ Destination() }`。
         // 宏已经生成了对应的 reducer，这个重载能从 `Destination.State` 反查出来。
-        .ifLet(\.$destination, action: \.destination)
+        // `\.$destination` 是状态属性的投影。`\.destinationAction` 是动作 case。
+        .ifLet(\.$destination, action: \.destinationAction)
+        // `forEach` 是堆栈版的 ifLet：path 里每个元素各跑一份对应的子 reducer。
+        // 某一层被弹出后，这一层启动的 Effect 会被取消，并给这一层注入 dismiss。
+        // `\.path` 是状态里的堆栈。`\.pathAction` 是堆栈动作。
+        //
+        // 这里不用写 `{ Path() }`。`Path` 是 `@Reducer enum`，
+        // 这个重载能从 `Path.State` 反查出 reducer，再按 case 转给详情或编辑。
+        .forEach(\.path, action: \.pathAction)
     }
 }
 
@@ -148,9 +210,23 @@ extension ContactsFeature {
         case addContact(AddContactFeature)
         case alert(AlertState<ContactsFeature.Action.Alert>)
     }
+
+    /// 能推进导航堆栈的页面。和 `Destination` 同一套做法，差别只在数量：
+    /// 弹窗同一时刻最多一个，堆栈可以同时叠着好几层，所以状态放在 `StackState` 里，不放进可选值。
+    ///
+    /// case 里放的是 reducer 类型。宏会生成 `Path.State` / `Path.Action`，
+    /// 例如 `.detail(ContactDetailFeature.State)` 和 `.edit(EditContactFeature.Action)`。
+    @Reducer
+    enum Path {
+        case detail(ContactDetailFeature)
+        case edit(EditContactFeature)
+    }
 }
 
 /// 1.10 教程写的是 `@Reducer(state: .equatable)`，让宏帮 `Destination.State` 加上 `Equatable`。
 /// 这个参数在后续版本里废弃了：编译器已经允许直接给宏生成的嵌套类型补协议。
 /// `ContactsFeature.State` 要 `Equatable`，它里面的 `destination` 也必须 `Equatable`。
 extension ContactsFeature.Destination.State: Equatable {}
+
+/// `path` 放在 `ContactsFeature.State` 里，元素也必须能比较。
+extension ContactsFeature.Path.State: Equatable {}

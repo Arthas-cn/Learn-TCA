@@ -13,6 +13,7 @@
 7. [多个目的地](07-多个目的地.md)：用一个枚举表示互斥的弹出界面
 8. [Delegate：父子通信](08-Delegate父子通信.md)：子功能怎样把结果交还给父功能
 9. [自定义弹层](09-自定义弹层.md)：自己画的遮罩不用 `@Presents`
+10. [导航堆栈](10-导航堆栈.md)：从列表钻进详情，再从详情删掉联系人
 
 ## 工程里的两棵功能树
 
@@ -20,13 +21,16 @@
 
 ```text
 ContactsFeature
- ├── AddContactFeature     添加联系人 sheet，有值才存在
- └── AlertState            删除确认框，有值才存在
+ ├── AddContactFeature        添加联系人 sheet，有值才存在
+ ├── AlertState               删除确认框，有值才存在
+ └── path: [Path]             钻进去的页面，可以有多层
+      ├── detail              联系人详情
+      └── edit                编辑名字
 ```
 
-入口在 `TCA/TCAApp.swift`。
+入口在 `TCA/TCAApp.swift`，列表里可以选择进入哪一个例子。
 
-另一棵树留在工程里，没有接到入口上：
+另一棵树是两个计数器页签：
 
 ```text
 AppFeature
@@ -44,4 +48,8 @@ AppFeature
 | `TCA/Contact.swift` | 放进 State 的模型 |
 | `TCA/AddContactFeature.swift` | 子功能，通过 delegate 上报结果 |
 | `TCA/ContactsFeature.swift` | `ifLet`、`@Presents`、`Destination` |
-| `TCA/ContactsView.swift` | 用 `scope` 把子 store 交给 sheet 和 alert |
+| `TCA/ContactsView.swift` | 用 `scope` 把子 store 交给 sheet、alert 和导航堆栈 |
+| `TCA/ContactDetailFeature.swift` | 堆栈里的详情页，删除或请求编辑时发 delegate |
+| `TCA/ContactDetailView.swift` | 详情页视图 |
+| `TCA/EditContactFeature.swift` | 堆栈里的第二种页面，保存时发 delegate |
+| `TCA/EditContactView.swift` | 编辑页视图 |

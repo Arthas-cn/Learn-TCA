@@ -19,7 +19,7 @@
 动作也多了一层 `PresentationAction`：
 
 ```swift
-case destination(PresentationAction<Destination.Action>)
+case destinationAction(PresentationAction<Destination.Action>)
 ```
 
 只有两种情况：
@@ -31,13 +31,13 @@ case destination(PresentationAction<Destination.Action>)
 
 ```swift
 .sheet(
-    item: $store.scope(\.destination?.addContact, action: \.destination.addContact)
+    item: $store.scope(\.destination?.addContact, action: \.destinationAction.addContact)
 ) { addContactStore in
     NavigationStack {
         AddContactView(store: addContactStore)
     }
 }
-.alert($store.scope(\.destination?.alert, action: \.destination.alert))
+.alert($store.scope(\.destination?.alert, action: \.destinationAction.alert))
 ```
 
 `@Bindable var store` 是为了写出 `$store`。系统 modifier 要的是 `Binding<Store?>`：

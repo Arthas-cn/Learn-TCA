@@ -44,6 +44,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		C94F27053088588100D72681 /* Docs */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Docs;
+			sourceTree = "<group>";
+		};
 		C98D49B4302321170014EC63 /* TCA */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -93,6 +98,7 @@
 		C98D49A9302321170014EC63 = {
 			isa = PBXGroup;
 			children = (
+				C94F27053088588100D72681 /* Docs */,
 				C98D49B4302321170014EC63 /* TCA */,
 				C98D49C2302321180014EC63 /* TCATests */,
 				C98D49CC302321180014EC63 /* TCAUITests */,
@@ -126,6 +132,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				C94F27053088588100D72681 /* Docs */,
 				C98D49B4302321170014EC63 /* TCA */,
 			);
 			name = TCA;
