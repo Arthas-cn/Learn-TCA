@@ -4,7 +4,7 @@
 
 ## 阅读顺序
 
-1. [一个功能的三件套](01-一个功能的三件套.md)：State、Action、Reducer、Store
+1. [一个功能的三件套](01-一个功能的三件套.md)：State、Action、`Reduce`，以及 `@Reducer` / `Reducer` 协议 / `body` 各指什么
 2. [Effect 与依赖](02-Effect与依赖.md)：异步工作、取消、`@Dependency`
 3. [组合](03-组合.md)：为什么要嵌成一棵树，三种接法怎么选
 4. [Scope：同时存在的子功能](04-Scope同时存在的子功能.md)：两个计数器页签

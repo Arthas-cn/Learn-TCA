@@ -21,7 +21,7 @@ struct AddContactFeature {
         /// 子功能通知父功能的出口。子功能不直接改父状态。
         case delegate(Delegate)
         case saveButtonTapped
-        /// 文本框每改一个字就发一次，由 reducer 写回 `contact.name`。
+        /// 文本框每改一个字就发一次，由 `Reduce` 写回 `contact.name`。
         case setName(String)
 
         enum Delegate {
@@ -32,7 +32,7 @@ struct AddContactFeature {
     }
 
     /// `dismiss` 不是子功能自己发明的。
-    /// 父功能用 `ifLet` 把子 reducer 嵌进来时，库会注入这个依赖。
+    /// 父功能用 `ifLet` 把子功能嵌进来时，库会注入这个依赖。
     /// 调用它等于向父 store 发送 `PresentationAction.dismiss`，由 `ifLet` 把展示状态置 nil。
     @Dependency(\.dismiss) var dismiss
 
@@ -40,7 +40,7 @@ struct AddContactFeature {
         Reduce { state, action in
             switch action {
             case .cancelButtonTapped:
-                // 副作用放在 Effect 里。reducer 本身保持同步、可测试。
+                // 副作用放在 Effect 里。`Reduce` 本身保持同步、可测试。
                 return .run { _ in
                     await self.dismiss()
                 }

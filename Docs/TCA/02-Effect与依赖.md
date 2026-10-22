@@ -2,7 +2,7 @@
 
 对照源码：`TCA/Counter/CounterFeature.swift`、`TCA/Counter/NumberFactClient.swift`、`TCA/Contacts/AddContact/AddContactFeature.swift`
 
-Reducer 的 `switch` 本身是同步的。它立刻改状态，然后返回一个 `Effect`，表示「接下来还要做什么」。
+`Reduce` 里的 `switch` 本身是同步的。它立刻改状态，然后返回一个 `Effect`，表示「接下来还要做什么」。
 
 - 没有后续工作：`return .none`
 - 有异步工作：`return .run { send in ... }`
@@ -27,7 +27,7 @@ case .factButtonTapped:
 
 `[count = state.count]` 把发出请求那一刻的数字捕获进 Effect。请求在飞的时候用户即使又点了加号，这次请求仍然对应旧数字。
 
-Effect 里通过 `send` 把结果送回 reducer。结果仍然走同一个 `switch`，不会直接改状态。
+Effect 里通过 `send` 把结果送回同一个 `Reduce`。结果仍然走同一个 `switch`，不会直接改状态。
 
 ## 取消
 
@@ -50,7 +50,7 @@ return .cancel(id: CancelID.timer)
 
 同一个 id 的任务被取消，循环结束，不会再有 `.timerTick`。
 
-`ifLet` 在子功能的状态变成 `nil` 时，取消的也是这种 Effect：子 reducer 用 `.run` 启动、还没结束的任务。SwiftUI 的动画、转场、视图上的 `.task` 不在这次取消里。
+`ifLet` 在子功能的状态变成 `nil` 时，取消的也是这种 Effect：子功能的 `Reduce` 用 `.run` 启动、还没结束的任务。SwiftUI 的动画、转场、视图上的 `.task` 不在这次取消里。
 
 联系人的保存 Effect 很短，发出 delegate 并 `dismiss` 后就结束了，通常等不到被取消。取消真正起作用的是子界面还开着时启动的长任务，比如请求还没回来，用户已经把 sheet 滑掉。任务被取消后，就不能再 `send` 动作回来改一块已经不存在的子状态。
 
@@ -69,7 +69,7 @@ Effect 里用到的时钟、网络，不在功能内部直接创建。功能只�
 
 ## dismiss 也是一个依赖
 
-`AddContactFeature` 里的 `dismiss` 不是它自己创建的。父功能用展示用的 `ifLet` 嵌进子 reducer 时，库把这个依赖注入进去。
+`AddContactFeature` 里的 `dismiss` 不是它自己创建的。父功能用展示用的 `ifLet` 把子功能嵌进来时，库把这个依赖注入进去。
 
 子功能调用 `await self.dismiss()`，等于请父功能把当前弹出状态置为 `nil`。子功能因此可以关掉自己所在的 sheet，同时不用知道父功能叫 `ContactsFeature`。
 

@@ -22,7 +22,7 @@ case .saveButtonTapped:
 
 顺序就按这个来。`dismiss` 会清掉子状态，放在前面的话，Effect 里就读不到 `contact` 了。
 
-子功能自己的 reducer 收到 `.delegate` 时返回 `.none`。这件事是说给父功能听的，子功能不再处理一次。
+子功能自己的 `Reduce` 收到 `.delegate` 时返回 `.none`。这件事是说给父功能听的，子功能不再处理一次。
 
 取消没有 delegate。取消只是把 sheet 关掉，父功能的列表不需要变化，`dismiss` 就够了。
 

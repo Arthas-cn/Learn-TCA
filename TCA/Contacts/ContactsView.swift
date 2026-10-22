@@ -22,30 +22,39 @@ struct ContactsView: View {
         NavigationStack(path: $store.scope(\.path, action: \.pathAction)) {
             List {
                 ForEach(store.contacts) { contact in
-                    // 必须用库提供的 `NavigationLink(state:)`。
-                    // 它把这份详情 State 追加进 path，而不是用 SwiftUI 自带的 `init(value:)`。
-                    // 推进去的值必须是堆栈元素 `Path.State`，不能直接写详情的 State。
-                    // `.detail` 表示这一层是详情页。点下去会 append 进 path。
-                    NavigationLink(
-                        state: ContactsFeature.Path.State.detail(
-                            ContactDetailFeature.State(contact: contact)
-                        )
-                    ) {
-                        HStack {
-                            Text(contact.name)
-                            Spacer()
-                            Button {
-                                store.send(.deleteButtonTapped(id: contact.id))
-                            } label: {
-                                Image(systemName: "trash")
-                                    .foregroundStyle(.red)
-                            }
+                    HStack {
+                        Text(contact.name)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            // 名字不拦截点击，点这一块会落到后面的 NavigationLink，推进详情。
+                            .allowsHitTesting(false)
+                        Button {
+                            store.send(.deleteButtonTapped(id: contact.id))
+                        } label: {
+                            Image(systemName: "trash")
+                                .foregroundStyle(.red)
                         }
+                        // 放在链接里面时，整行都是链接，垃圾桶点不到。
+                        // borderless 让 List 把这个按钮当成行里的独立控件。
+                        .buttonStyle(.borderless)
                     }
-                    // 行本身是一个 NavigationLink。borderless 让里面的垃圾桶仍能单独点击。
-                    .buttonStyle(.borderless)
+                    .background {
+                        // 必须用库提供的 `NavigationLink(state:)`。
+                        // 它把这份详情 State 追加进 path，而不是用 SwiftUI 自带的 `init(value:)`。
+                        // `.detail` 表示这一层是详情页。点下去会 append 进 path。
+                        NavigationLink(
+                            state: ContactsFeature.Path.State.detail(
+                                ContactDetailFeature.State(contact: contact)
+                            )
+                        ) {
+                            EmptyView()
+                        }
+                        .opacity(0)
+                    }
                 }
             }
+            // 增删发生在 Reduce 里，按钮的 withAnimation 包不到那次状态变化。
+            // 列表观察 contacts：多一行就插入，少一行就删除，动画用系统默认的。
+            .animation(.default, value: store.contacts)
             .navigationTitle("Contacts")
             .toolbar {
                 if let demoBack {

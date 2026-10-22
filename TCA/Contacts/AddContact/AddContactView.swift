@@ -17,7 +17,7 @@ struct AddContactView: View {
         Form {
             // `$store.contact.name` 是一份指向状态的 Binding。
             // `.sending(\.setName)` 把它改成：用户每输入一个字，就 `send(.setName)`。
-            // 状态仍然只由 reducer 修改，视图不直接写 `store.contact.name = ...`。
+            // 状态仍然只由 `Reduce` 修改，视图不直接写 `store.contact.name = ...`。
             TextField("Name", text: $store.contact.name.sending(\.setName))
 
             Button("Save") {

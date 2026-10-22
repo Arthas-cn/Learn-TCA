@@ -18,7 +18,7 @@ var body: some ReducerOf<Self> {
 }
 ```
 
-`CounterFeature()` 写了两次。这是两个 reducer 实例，处理两份互相独立的 `CounterFeature.State`。页签 1 的 `count` 和页签 2 的 `count` 各算各的。
+`CounterFeature()` 写了两次。这是同一功能的两个实例，各跑各的 `Reduce`，处理两份互相独立的 `CounterFeature.State`。页签 1 的 `count` 和页签 2 的 `count` 各算各的。
 
 ## 一个动作只进入其中一个
 
@@ -30,11 +30,11 @@ var body: some ReducerOf<Self> {
 
 处理顺序：
 
-1. 第一个 `Scope` 发现动作对得上 `\.tab1`，把 `state.tab1` 交给计数器 reducer。`count` 加 1。
+1. 第一个 `Scope` 发现动作对得上 `\.tab1`，把 `state.tab1` 交给这一份 `CounterFeature` 的 `Reduce`。`count` 加 1。
 2. 第二个 `Scope` 发现动作对不上 `\.tab2`，什么也不做。
-3. 最下面的父 `Reduce` 收到同一个动作。现在没有跨页签的逻辑，返回 `.none`。
+3. 最下面父功能自己的 `Reduce` 收到同一个动作。现在没有跨页签的逻辑，返回 `.none`。
 
-点页签 2 时反过来。两个 `Scope` 都会被问到，只有路径匹配的那个子 reducer 运行。
+点页签 2 时反过来。两个 `Scope` 都会被问到，只有路径匹配的那一份 `CounterFeature` 会跑自己的 `Reduce`。
 
 ## 视图只持有一个 Store
 
@@ -47,13 +47,13 @@ CounterView(store: store.scope(\.tab2, action: \.tab2))
 
 `CounterView` 仍然只认识 `StoreOf<CounterFeature>`。它不知道自己位于哪一个页签。
 
-应用入口的「计数器」打开的就是这一棵树。两个页签如果各自 `Store(initialState: CounterFeature.State())`，`AppFeature` 的 reducer 不会参与，页签之间以后也无法协作。
+应用入口的「计数器」打开的就是这一棵树。两个页签如果各自 `Store(initialState: CounterFeature.State())`，动作不会进入 `AppFeature` 的 `body`，页签之间以后也无法协作。
 
 ## 父功能什么时候才写自己的逻辑
 
-父 `Reduce` 为空，表示这些子功能被放在一起，但彼此不协作。
+父功能自己的 `Reduce` 为空，表示这些子功能被放在一起，但彼此不协作。
 
-如果产品要求「页签 1 点加号时，页签 2 也加一」，就在父 `Reduce` 里增加分支，改 `state.tab2`。计数器本身仍然只认识自己的 `count`，不需要知道还有另一个页签。
+如果产品要求「页签 1 点加号时，页签 2 也加一」，就在父功能的 `Reduce` 里增加分支，改 `state.tab2`。计数器本身仍然只认识自己的 `count`，不需要知道还有另一个页签。
 
 ## 和 ifLet 的分界
 

@@ -81,7 +81,7 @@ struct ContactDetailFeature {
 }
 
 extension AlertState where Action == ContactDetailFeature.Action.Alert {
-    /// 把确认框的文案从 reducer 分支里拿出来，之后测试可以直接比较这个值。
+    /// 把确认框的文案从 `Reduce` 分支里拿出来，之后测试可以直接比较这个值。
     static let confirmDeletion = Self {
         TextState("Are you sure?")
     } actions: {

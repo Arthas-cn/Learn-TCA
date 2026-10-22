@@ -11,7 +11,7 @@ import Foundation
 /// 列表里的一条联系人。
 ///
 /// TCA 里放进 `State` 的模型几乎都要 `Equatable`：
-/// `TestStore` 靠前后状态是否相等来判断 reducer 有没有改对，
+/// `TestStore` 靠前后状态是否相等来判断 `Reduce` 有没有改对，
 /// SwiftUI 也靠它跳过不必要的刷新。
 ///
 /// `Identifiable` 是给 `IdentifiedArrayOf` 和 `ForEach` 用的。

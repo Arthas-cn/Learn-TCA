@@ -50,7 +50,7 @@ case destinationAction(PresentationAction<Destination.Action>)
 
 ## 和普通可选值的差别
 
-普通的 `var popup: RenameFeature.State?` 可以描述「现在有没有这个子功能」，并用普通 `ifLet` 接上子 reducer。
+普通的 `var popup: RenameFeature.State?` 可以描述「现在有没有这个子功能」，并用普通 `ifLet` 接上子功能的 `body`。
 
 它没有展示身份，也没有 `.dismiss`。SwiftUI 的 `.sheet(item:)` 无法把用户的下滑关闭写回这份状态。自己在 `ZStack` 里画出来的弹层不需要这套集成，用法见 [自定义弹层](09-自定义弹层.md)。
 

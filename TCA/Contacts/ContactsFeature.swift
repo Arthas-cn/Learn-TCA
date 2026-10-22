@@ -72,7 +72,7 @@ struct ContactsFeature {
         /// 状态属性是 `path`，动作 case 是 `pathAction`。
         case pathAction(StackActionOf<Path>)
 
-        /// Alert 按钮回传的动作。它不属于某个子 reducer，只是按钮被点了之后父功能要做的事。
+        /// Alert 按钮回传的动作。它没有自己的 `Reduce`，只是按钮被点了之后父功能要做的事。
         /// `AlertState` 要求这个类型 `Equatable`，这样整棵状态可以比较、可以写测试。
         enum Alert: Equatable {
             case confirmDeletion(id: Contact.ID)
@@ -171,28 +171,28 @@ struct ContactsFeature {
                 return .none
             }
         }
-        // `ifLet` 把子 reducer 接到父 reducer 上。展示状态是 nil 时，子 reducer 不运行。
+        // `ifLet` 把子功能的 `body` 接到父功能上。展示状态是 nil 时，子功能的 `Reduce` 不运行。
         // 它还做三件父功能自己很容易漏掉的事：
-        // 1. 先跑子 reducer，再跑父 reducer。父功能若先把 destination 清掉，子功能就看不到自己的状态了。
+        // 1. 先跑子功能的 `Reduce`，再跑父功能的 `Reduce`。父功能若先把 destination 清掉，子功能就看不到自己的状态了。
         // 2. destination 被置 nil 时，取消这个子界面启动的 Effect。
         // 3. 给子功能注入 `dismiss` 依赖。
         //
         // `Destination` 是 `@Reducer enum`，所以不用像普通子功能那样写出 `{ Destination() }`。
-        // 宏已经生成了对应的 reducer，这个重载能从 `Destination.State` 反查出来。
+        // 宏已经生成了它的 `body`，这个重载能从 `Destination.State` 反查出来。
         // `\.$destination` 是状态属性的投影。`\.destinationAction` 是动作 case。
         .ifLet(\.$destination, action: \.destinationAction)
-        // `forEach` 是堆栈版的 ifLet：path 里每个元素各跑一份对应的子 reducer。
+        // `forEach` 是堆栈版的 ifLet：path 里每个元素各跑对应功能的 `Reduce`。
         // 某一层被弹出后，这一层启动的 Effect 会被取消，并给这一层注入 dismiss。
         // `\.path` 是状态里的堆栈。`\.pathAction` 是堆栈动作。
         //
         // 这里不用写 `{ Path() }`。`Path` 是 `@Reducer enum`，
-        // 这个重载能从 `Path.State` 反查出 reducer，再按 case 转给详情或编辑。
+        // 这个重载能从 `Path.State` 反查出 `body`，再按 case 转给详情或编辑的 `Reduce`。
         .forEach(\.path, action: \.pathAction)
     }
 }
 
 extension ContactsFeature {
-    /// 所有可以从联系人列表导航过去的界面，合成一个 reducer。
+    /// 所有可以从联系人列表弹出去的界面，合成一个功能。
     ///
     /// `@Reducer` 加在 enum 上时，宏会按 case 合成：
     /// - `Destination.State`：每个 case 带上子功能的 `State`（alert 带的是 `AlertState`）
@@ -200,10 +200,10 @@ extension ContactsFeature {
     /// - 一个负责按 case 转发的 `body`
     /// 以后要再加一种弹出界面，只加一个 case，父功能的状态不用再加一个可选值。
     ///
-    /// case 里放的是 reducer 类型（`AddContactFeature`），不是 `AddContactFeature.State`。
+    /// case 里放的是功能类型（`AddContactFeature`），不是 `AddContactFeature.State`。
     /// `State` / `Action` 由宏从这些类型推导。
     ///
-    /// `AlertState` 会被库认成临时状态：它没有自己的子 reducer，
+    /// `AlertState` 会被库认成临时状态：它没有自己的 `Reduce`，
     /// 按钮动作直接冒泡给父功能，并且一点击就关闭。
     @Reducer
     enum Destination {
@@ -214,7 +214,7 @@ extension ContactsFeature {
     /// 能推进导航堆栈的页面。和 `Destination` 同一套做法，差别只在数量：
     /// 弹窗同一时刻最多一个，堆栈可以同时叠着好几层，所以状态放在 `StackState` 里，不放进可选值。
     ///
-    /// case 里放的是 reducer 类型。宏会生成 `Path.State` / `Path.Action`，
+    /// case 里放的是功能类型。宏会生成 `Path.State` / `Path.Action`，
     /// 例如 `.detail(ContactDetailFeature.State)` 和 `.edit(EditContactFeature.Action)`。
     @Reducer
     enum Path {
